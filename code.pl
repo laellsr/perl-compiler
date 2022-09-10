@@ -1,3 +1,4 @@
-Isso aqui
-é um teste
-falou?
+$a = 5;
+$b = "geeks";
+$c = 15;
+$sum = $a + $b + $c;
