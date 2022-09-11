@@ -1,16 +1,28 @@
-from enum import Enum
+tokenCategory = {
+    "COMMENT_LINE" : r'\/\/',
+    "COMMENT_BLOCK" : 'COMMENT_BLOCK',
+    "POD" : 'POD',
+    "SIGIL_ARRAY" : '$@',
+    "SIGIL_SCALAR" : '$$',
+    "SIGIL_SCALAR_INDEX" : '$#',
+    "SIGIL_GLOB" : '$*',
+    "SIGIL_HASH" : '$%',
+    "SIGIL_CODE" : '$&',
+}
 
-class TokenCategory(Enum):
-    COMMENT_LINE='COMMENT_LINE'
-    COMMENT_BLOCK='COMMENT_BLOCK'
-    POD='POD'
+# from enum import Enum
 
-    SIGIL_ARRAY='$@'
-    SIGIL_SCALAR='$$'
-    SIGIL_SCALAR_INDEX='$#'
-    SIGIL_GLOB='$*'
-    SIGIL_HASH='$%'
-    SIGIL_CODE='$&'
+# class TokenCategory(Enum):
+#     COMMENT_LINE='COMMENT_LINE'
+#     COMMENT_BLOCK='COMMENT_BLOCK'
+#     POD='POD'
+
+#     SIGIL_ARRAY='$@'
+#     SIGIL_SCALAR='$$'
+#     SIGIL_SCALAR_INDEX='$#'
+#     SIGIL_GLOB='$*'
+#     SIGIL_HASH='$%'
+#     SIGIL_CODE='$&'
 
     # LEFT_BRACE_SCALAR='${'
     # LEFT_BRACE_ARRAY='@{'

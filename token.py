@@ -6,4 +6,3 @@ class Token:
         self.line = line
         self.column = column
         self.value = value
-        

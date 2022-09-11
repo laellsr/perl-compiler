@@ -1,4 +1,5 @@
+$name = "soma de três inteiros";
 $a = 5;
-$b = "geeks";
+$b = 10;
 $c = 15;
-$sum = $a + $b + $c;
+$sum = (($a + $b) + $c);
