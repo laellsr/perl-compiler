@@ -9,10 +9,10 @@ if(len(sys.argv) < 2):
 
 try:
     file = open(sys.argv[1], 'r', encoding="utf-8")
-    
+
 except:
     print("Arquivo inválido")
-    
+
 else:
     print(f"Compilando {sys.argv[1]}")
     print(file.readlines())
@@ -23,6 +23,6 @@ else:
     # print(file.readlines())
     # token = TokenCategory.COMMENT_LINE
     # print(token)
-    
+
 finally:
     file.close()

@@ -16,6 +16,7 @@ except:
 else:
     print(f"Compilando {sys.argv[1]}")
     print(file)
+    scanner(file)
     # for line, lineData in enumerate(file, start=1):
     #     for char, charData in enumerate(lineData, start=1):
     #         print(charData)
