@@ -2,6 +2,7 @@ from enum import Enum
 
 
 class TokenCategory(Enum):
+    NUM = 0
     SIGIL_SCALAR = '$$'
     OPERATOR_LT_NUMERIC = '<'
     OPERATOR_GT_NUMERIC = '>'
@@ -23,11 +24,7 @@ class TokenCategory(Enum):
     STRING_SPECIAL_TAB = '\t'
     STRING_SPECIAL_NEWLINE = '\n'
     STRING_SPECIAL_RETURN = '\r'
-    STRING_SPECIAL_FORMFEED = '\f'
     STRING_SPECIAL_BACKSPACE = '\b'
-    STRING_SPECIAL_ALARM = '\a'
-    STRING_SPECIAL_ESCAPE = '\e'
-    STRING_SPECIAL_ESCAPE_CHAR = '\\'
     LEFT_PAREN = '('
     RIGHT_PAREN = ')'
     LEFT_BRACE = '{'
