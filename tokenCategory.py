@@ -49,3 +49,5 @@ class TokenCategory(Enum):
     RESERVED_EXIT = 45
     RESERVED_METHOD = 46
     RESERVED_FUNC = 47
+    VAR = 48
+    ERROR = 49

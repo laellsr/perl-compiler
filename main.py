@@ -14,7 +14,10 @@ else:
     print(f"Compilando {sys.argv[1]}")
     # print(file.read())
     c = AnalisadorLexico(file.read())
+    # c = AnalisadorLexico('$a= ')
     c.nextToken()
+    # t = IsToken('$a')
+
 finally:
     file.close()
 
