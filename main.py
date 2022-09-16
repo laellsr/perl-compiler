@@ -1,7 +1,7 @@
 import sys
 from enum import Enum
 from tokenCategory import *
-from token import *
+from lexer import *
 
 if(len(sys.argv) < 2):
     print("Argumento de arquivo de código em perl vazio :c\nTente: python main.py <arquivo_de_codigo.pl>\n")
@@ -17,7 +17,9 @@ else:
     print(f"Compilando {sys.argv[1]}")
     fileList = file.readlines()
     print(fileList[0][0])
-    
+    lexer = Lexer()
+    token = Token()
+    # match lexer.state :
     # for line, lineData in enumerate(file, start=1):
     #     for char, charData in enumerate(lineData, start=1):
     #         print(charData)
@@ -25,7 +27,9 @@ else:
     # print(file.readlines())
     # token = TokenCategory.COMMENT_LINE
     # print(token)
-    file.close()
+    # file.close()
     
-# finally:
+finally:
+    if (file):
+        file.close()
     
