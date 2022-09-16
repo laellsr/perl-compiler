@@ -1,6 +1,5 @@
 import sys
 from analisador_lexico import AnalisadorLexico
-from nextChar import NextChar
 if(len(sys.argv) < 2):
     print("Argumento de arquivo de código em perl vazio :c\nTente: python main.py <arquivo_de_codigo.pl>\n")
     exit()

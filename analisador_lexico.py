@@ -1,7 +1,7 @@
 from tokenCategory import TokenCategory
 from tokenClass import Token
 # from lerArquivo import LerArquivo
-from nextChar import NextChar
+# from nextChar import NextChar
 
 
 class AnalisadorLexico:
