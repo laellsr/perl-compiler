@@ -1,8 +1,6 @@
 import sys
-from enum import Enum
-from tokenCategory import *
-from token import *
-
+from analisador_lexico import AnalisadorLexico
+from nextChar import NextChar
 if(len(sys.argv) < 2):
     print("Argumento de arquivo de código em perl vazio :c\nTente: python main.py <arquivo_de_codigo.pl>\n")
     exit()
@@ -15,7 +13,13 @@ except:
 
 else:
     print(f"Compilando {sys.argv[1]}")
-    print(file.readlines())
+    # print(file.read())
+    c = AnalisadorLexico(file.read())
+    c.nextToken()
+finally:
+    file.close()
+
+    # c+=1
     # for line, lineData in enumerate(file, start=1):
     #     for char, charData in enumerate(lineData, start=1):
     #         print(charData)
@@ -23,6 +27,3 @@ else:
     # print(file.readlines())
     # token = TokenCategory.COMMENT_LINE
     # print(token)
-
-finally:
-    file.close()
