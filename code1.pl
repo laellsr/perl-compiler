@@ -1,0 +1,1 @@
+$aaaa $jose 123 @vetor
