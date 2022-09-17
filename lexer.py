@@ -1,45 +1,87 @@
-from tokenCategory import *
+from tkCategory import *
+import re
 
 class Lexer:
     def __init__(self, file) -> None:
         self.file = file
+        self.fileSize = len(self.file)
+        self.currentFilePosition = 0
         self.state = 0
+        self.lexeme = ""
+        self.currentChar = self.file[self.currentFilePosition]
+        self.currentCharIsChecked = 0
         self.tokens = []
-        self.currentToken = Token()
         self.brackets = Brackets()
-        self.charChecked = 0
         
-    def nextChar(self, char) -> None:
-        self.charChecked = 0
-        match self.state:
-            case 0:
-                isScalar(char)
-                isArray(char)
-                isLetter(char)
-                isNumber(char)
-                isSemicolon(char)
-                isSymbol(char)
-            case 1:
-                # scalar
-                isLetter(char)
-                isUnderline(char)
-                is
-            case default:
-                pass
+    def nextChar(self) -> None:
+        self.currentFilePosition += 1
+        if self.currentFilePosition < self.fileSize:
+            self.currentChar = self.file[self.currentFilePosition]
+            self.currentCharIsChecked = 0
     
     def nextToken(self) -> None:
-        self.tokens.append(self.currentToken)
-        self.currentToken = Token()        
-    
-    def isScalar(self, char) -> None:
-        if self.charChecked:
-            return
-        if char == '$':
-            self.currentToken.value = self.currentToken.value + char
-            self.state = 1
-            self.charChecked = 1
-            
+        token = Token(self.lexeme) 
+        self.tokens.append(token)
+        self.lexeme = ""
+        self.state = 0
+        self.nextChar()
         
+    def isDigit(self) -> None:
+        if self.currentCharIsChecked == 1:
+            return
+        elif re.fullmatch(r'[0-9]', self.currentChar):
+            self.state = 2
+            self.recognized()
+
+    def isDollar(self) -> None:
+        if self.currentCharIsChecked == 1:
+            return
+        elif self.currentChar == '$':
+            self.state = 1
+            self.recognized()
+            
+    def isNumber(self) -> None:
+        if self.currentCharIsChecked == 1:
+            return
+        elif re.fullmatch(r'[0-9]|\.', self.currentChar):
+            self.recognized()
+        else:
+            self.nextToken()
+    
+    def isScalarOrArray(self) -> None:
+        if self.currentCharIsChecked == 1:
+            return
+        if re.fullmatch(r'[a-zA-Z]', self.currentChar):
+            self.recognized()
+        else:
+            self.nextToken()
+
+    def isPass(self) -> None:
+        if self.currentCharIsChecked == 1:
+            return
+        if self.currentChar == ' ' or self.currentChar == '\n' or self.currentChar == '\t':
+            self.currentCharIsChecked = 1
+            self.nextChar()
+    
+    def isArray(self):
+        if self.currentCharIsChecked == 1:
+            return
+        elif self.currentChar == '@':
+            self.state = 1
+            self.recognized()
+    
+    def recognized(self):
+        self.currentCharIsChecked = 1
+        self.lexeme += self.currentChar
+        self.nextChar()
+        
+    # def isSemicolon():
+    #     if self.currentCharIsChecked:
+    #         return
+    #     elif self.currentChar == '$':
+    #         self.state = 1
+    #         self.nextChar()
+
 class Brackets:
     def __init__(self) -> None:
         self.round = 0
@@ -47,9 +89,14 @@ class Brackets:
         self.curvy = 0
         
 class Token:
-    def __init__(self):
-        self.category = ""
+    def __init__(self, lexeme):
+        self.category = self.getTokenCategory(lexeme)
+        self.value = lexeme
         self.line = 0
         self.column = 0
-        self.value = ""
         self.error = 0
+    
+    def getTokenCategory(self, lexeme):
+        for tkCategory in tkCategories:
+            if re.fullmatch(tkCategories[tkCategory], lexeme) != None:
+                return tkCategory   
