@@ -2,37 +2,34 @@ import sys
 from tkCategory import *
 from lexer import *
 
-def run(lexer):
-    while lexer.currentFilePosition <= lexer.fileSize:
-        if lexer.currentFilePosition==lexer.fileSize:
-            lexer.nextToken()
-            break
-        # print(lexer.currentChar, lexer.currentFilePosition, lexer.fileSize)
+def run(lexer) -> None:
+    while lexer.currentFilePosition < lexer.fileSize:
+        print(lexer.currentChar, lexer.currentFilePosition)
         match lexer.state:
             case 0:
                 # initial
                 lexer.isPass()
+                lexer.isDigit()
+                lexer.isLetter()
                 lexer.isDollar()
                 lexer.isArray()
-                # lexer.isLetter()
-                lexer.isDigit()
                 # lexer.isSemicolon()
                 # lexer.isSymbol()
             case 1:
-                # scalar or array
-                lexer.isScalarOrArray()
+                # identifier: scalar, array, func
+                lexer.isIdentifier()
             case 2:
                 # number
                 lexer.isNumber()
-                pass
             case 3:
-                # letter
-                # lexer.isLetter()
-                pass
+                # reserved word
+                lexer.isReservedWord()
             case default:
                 pass
+    if lexer.lexeme != '':
+            lexer.nextToken()
 
-def printLexerTokenList(lexer):
+def printLexerTokenList(lexer) -> None:
     for token in lexer.tokens:
         print("<" + token.category + "," + token.value + ">")
 
