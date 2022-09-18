@@ -103,7 +103,7 @@ class Lexer:
     def isOperator(self):
         if self.currentCharIsChecked == 1:
             return
-        elif re.fullmatch(r'[(<)|(>)|(\+\+)|(\-\-)|(\&\&)|(\|\|)|(\*)|(\%)|(\+)|(\-)|(>=)|(<=)|(==)|(!=)|(=)]', self.currentChar):
+        elif re.fullmatch(r'[(<)|(>)|(\&)|(\|)|(\*)|(\%)|(\+)|(\-)|(>=)|(<=)|(!=)|(=)]', self.currentChar):
             self.recognized
         else:
             self.nextToken()
