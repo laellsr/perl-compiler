@@ -13,6 +13,7 @@ def run(lexer) -> None:
                 lexer.isLetter()
                 lexer.isDollar()
                 lexer.isArray()
+                lexer.isOperator()
                 # lexer.isSemicolon()
                 # lexer.isSymbol()
             case 1:

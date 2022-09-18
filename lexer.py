@@ -99,6 +99,15 @@ class Lexer:
         self.currentCharIsChecked = 1
         self.lexeme += self.currentChar
         self.nextChar()
+
+    def isOperator(self):
+        if self.currentCharIsChecked == 1:
+            return
+        elif re.fullmatch(r'[(<)|(>)|(\+\+)|(\-\-)|(\&\&)|(\|\|)|(\*)|(\%)|(\+)|(\-)|(>=)|(<=)|(==)|(!=)|(=)]', self.currentChar):
+            self.recognized
+        else:
+            self.nextToken()
+        
         
     # def isSemicolon():
     #     if self.currentCharIsChecked:
