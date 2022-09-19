@@ -1,10 +1,12 @@
 import sys
+import re
 from token import *
 from lexer import *
 
 def run(lexer) -> None:
     while lexer.currentFilePosition < lexer.fileSize:
         # print(lexer.currentChar, lexer.currentFilePosition)
+        # print(lexer.lexeme)
         match lexer.state:
             case 0:
                 # initial
@@ -12,9 +14,12 @@ def run(lexer) -> None:
                 lexer.isDigit()
                 lexer.isLetter()
                 lexer.isDollar()
-                lexer.isArray()
+                lexer.isSign()
                 lexer.isOperator()
-                # lexer.isSemicolon()
+                lexer.isQuote()
+                lexer.isScope()
+                lexer.isCurvyBracket();
+                lexer.isSemicolon()
                 # lexer.isSymbol()
             case 1:
                 # identifier: scalar, array, func
@@ -26,12 +31,21 @@ def run(lexer) -> None:
                 # reserved word
                 lexer.isReservedWord()
             case 4:
+                # operator + number
+                lexer.isDigit()
+                if lexer.currentCharIsChecked==0 and re.fullmatch(r'[^0-9]', lexer.currentChar):
+                    lexer.state = 5
+            case 5:
                 # double operator
                 lexer.isDoubleOperator()
+            case 6:
+                # string
+                lexer.isString()
             case default:
                 pass
     if lexer.lexeme != '':
             lexer.nextToken()
+    
 
 def printLexerTokenList(lexer) -> None:
     for token in lexer.tokens:
@@ -48,6 +62,7 @@ else:
     print(f"Compilando {sys.argv[1]}")
     fileString = file.read()
     file.close()
+    # fileString = re.sub(r'\s', '', fileString)
     lexer = Lexer(fileString)
     run(lexer)
     printLexerTokenList(lexer)

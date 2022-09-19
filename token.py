@@ -42,10 +42,10 @@ tkCategories = {
     "RESERVED_EXIT" : r'exit',
     "RESERVED_METHOD" : r'method',
     "RESERVED_SUBROUTINE" : r'sub',
-    "FLOAT_NUMBER" : r"^[-]{0,1}[\d]+[\.][\d]+$",
-    "INTEGER_NUMBER" : r"^[-]{0,1}[0-9]*",
-    "STRING" : r'"[^”]*"',
-    "FIM" : "", #fim?
+    "ARRAY_OF_NUMBERS": r'\(([\+\-, ]*\d+)+\)',
+    "FLOAT_NUMBER" : r"^[\+-]{0,1}[\d]+[\.][\d]+$",
+    "INTEGER_NUMBER" : r"^[\+-]{0,1}[0-9]+",
+    "STRING" : r'"[^”]*"|\'[^\']*\'',
     "SUBROUTINE_IDENTIFIER" : r'^[a-zA-Z0-9_]{2,}',
     "FUNC_IDENTIFIER": r'^[a-zA-Z0-9_]{2,}',
     "SCALAR_IDENTIFIER": r'^[$][a-zA-Z0-9_]*',
@@ -72,4 +72,25 @@ tkCategories = {
     "LEFT_BRACE": r'\{',
     "RIGHT_BRACE" : r'\}',
     "SEMICOLON": r';'
+}
+
+reservedWords = {
+    "RESERVED_IF": r'if',
+    "RESERVED_ELSIF" : r'elsif',
+    "RESERVED_ELSE" : r'else',
+    "RESERVED_WHILE" : r'while',
+    "RESERVED_DEFAULT" : r'default',
+    "RESERVED_ASYNC" : r'async',
+    "RESERVED_PACKAGE" : r'package',
+    "RESERVED_USE" : r'use',
+    "RESERVED_PRINT" : r'print',
+    "RESERVED_SAY" : r'say',
+    "RESERVED_TRY" : r'try',
+    "RESERVED_CATCH" : r'catch',
+    "RESERVED_SWITCH" : r'switch',
+    "RESERVED_CASE" : r'case',
+    "RESERVED_RETURN" : r'return',
+    "RESERVED_EXIT" : r'exit',
+    "RESERVED_METHOD" : r'method',
+    "RESERVED_SUBROUTINE" : r'sub',
 }
