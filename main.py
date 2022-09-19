@@ -5,8 +5,6 @@ from lexer import *
 
 def run(lexer) -> None:
     while lexer.currentFilePosition < lexer.fileSize:
-        # print(lexer.currentChar, lexer.currentFilePosition)
-        # print(lexer.lexeme)
         match lexer.state:
             case 0:
                 # initial
@@ -18,9 +16,9 @@ def run(lexer) -> None:
                 lexer.isOperator()
                 lexer.isQuote()
                 lexer.isScope()
-                lexer.isCurvyBracket();
+                lexer.isCurvyBracket()
                 lexer.isSemicolon()
-                # lexer.isSymbol()
+                lexer.isCommentLine()
             case 1:
                 # identifier: scalar, array, func
                 lexer.isIdentifier()
@@ -51,6 +49,12 @@ def printLexerTokenList(lexer) -> None:
     for token in lexer.tokens:
         print("<" + token.category + "," + token.value + ">")
 
+def createTxtFile(lexer) -> None:
+    with open('out.txt', 'w') as file:
+        for token in lexer.tokens:
+            file.write("<" + token.category + "," + token.value + ">" + "\n")
+        file.close()
+
 if(len(sys.argv) < 2):
     print("Argumento de arquivo de código em perl vazio :c\nTente: python main.py <arquivo_de_codigo.pl>\n")
     exit()
@@ -66,5 +70,6 @@ else:
     lexer = Lexer(fileString)
     run(lexer)
     printLexerTokenList(lexer)
+    createTxtFile(lexer)
 finally:
     pass

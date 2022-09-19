@@ -22,9 +22,6 @@ class Lexer:
     
     def nextToken(self) -> None:
         token = Token(self.lexeme)
-        # if token.category == 'SUBROUTINE_IDENTIFIER':
-        #     if self.tokens[len(self.tokens)-1].category != 'RESERVED_SUBROUTINE':
-        #         token.category = 'FUNC_IDENTIFIER'
         self.tokens.append(token)
         self.lexeme = ""
         self.state = 0
@@ -85,7 +82,7 @@ class Lexer:
     def isIdentifier(self) -> None:
         if self.currentCharIsChecked == 1:
             return
-        elif re.fullmatch(r'[a-zA-Z]', self.currentChar):
+        elif re.fullmatch(r'[a-zA-Z0-9_]', self.currentChar):
             self.recognized(next=True)
         else:
             self.nextToken()
@@ -107,12 +104,12 @@ class Lexer:
     def isOperator(self):
         if self.currentCharIsChecked == 1:
             return
-        elif re.fullmatch(r'[(\|)|(\*)|(\%)]', self.currentChar):
+        elif re.fullmatch(r'[\|\*\%]', self.currentChar):
             if self.lexeme != '':
                 self.nextToken()
             else:
                 self.recognized(next=False)
-        elif re.fullmatch(r'[(<)|(>)|(\&)|(\|)|(\%)|(\+)|(\-)|(=)|(!)]', self.currentChar):
+        elif re.fullmatch(r'[<>\&\|\%\+\-=!]', self.currentChar):
             if self.lexeme != '':
                 self.nextToken()
             if re.search(r'NUMBER|IDENTIFIER', self.tokens[len(self.tokens)-1].category) and re.fullmatch(r'[^<>\&\|\%\+\-=!]', self.file[self.currentFilePosition+1]):
@@ -124,7 +121,7 @@ class Lexer:
     def isDoubleOperator(self):
         if self.currentCharIsChecked == 1:
             return
-        elif re.fullmatch(r'[(<)|(>)|(\&)|(\|)|(\%)|(\+)|(\-)|(=)|(!)]', self.currentChar):
+        elif re.fullmatch(r'[<>\&\|\%\+\-=!]', self.currentChar):
             self.recognized(next=False)
         else:
             self.state = 0
@@ -140,10 +137,28 @@ class Lexer:
     def isString(self):
         if self.currentCharIsChecked == 1:
             return
-        elif re.fullmatch(r'[^"\']', self.currentChar):
-            self.recognized(next=True)
-        else:
+        elif self.currentChar == self.lexeme[0]:
             self.recognized(next=False)
+        else:
+            self.recognized(next=True)
+            
+    def isCommentLine(self):
+        if self.currentCharIsChecked == 1:
+            return
+        elif self.currentChar == '#' and self.lexeme == '':
+            j = self.currentFilePosition
+            newLexeme = ''
+            while j < self.fileSize:
+                if self.file[j] == '\n':
+                    break
+                newLexeme += self.file[j]
+                j += 1
+            self.currentFilePosition = j
+            self.lexeme = newLexeme
+            self.currentChar = self.file[j]
+            self.currentCharIsChecked = 1
+            self.nextToken()
+            
             
     def isScope(self):
         if self.currentCharIsChecked == 1:
@@ -163,11 +178,23 @@ class Lexer:
     def isCurvyBracket(self):
         if self.currentCharIsChecked == 1:
             return
-        # elif re.fullmatch == '(':
-        #     j = self.currentFilePosition
-        #     newLexeme = ''
-        #     while j < self.fileSize-1:
-        #         lexeme += self.file[j]
-            # for j in range(self.currentFilePosition+1, self.fileSize-1):
-        elif re.fullmatch(r'[\(\)]', self.currentChar):
+        elif self.currentChar == '(':
+            if self.lexeme != '':
+                self.nextToken()
+            else:
+                j = self.currentFilePosition
+                newLexeme = ''
+                while j < self.fileSize:
+                    newLexeme += self.file[j]
+                    if self.file[j] == ')':
+                        break
+                    j += 1
+                if re.fullmatch(tkCategories['ARRAY_OF_NUMBERS'], newLexeme) or re.fullmatch(tkCategories['ARRAY_OF_STRINGS'], newLexeme):
+                    self.lexeme = newLexeme
+                    self.currentFilePosition = j
+                    self.currentCharIsChecked = 1
+                    self.nextToken()
+                elif re.fullmatch(r'[\(\)]', self.currentChar):
+                    self.recognized(next=False)
+        elif self.currentChar == ')':
             self.recognized(next=False)
