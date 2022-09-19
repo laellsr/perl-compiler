@@ -1,4 +1,4 @@
-from tkCategory import *
+from token import *
 import re
 
 class Lexer:
@@ -95,19 +95,33 @@ class Lexer:
             self.state = 1
             self.recognized()
     
+    def isOperator(self):
+        if self.currentCharIsChecked == 1:
+            return
+        elif re.fullmatch(r'[(\|)|(\*)|(\%)]', self.currentChar):
+            self.currentCharIsChecked = 1
+            self.lexeme += self.currentChar
+            self.nextToken()
+        elif re.fullmatch(r'[(<)|(>)|(\&)|(\|)|(\%)|(\+)|(\-)|(=)|(!)]', self.currentChar):
+            self.state = 4
+            self.recognized()
+    
+    def isDoubleOperator(self):
+        if self.currentCharIsChecked == 1:
+            return
+        elif re.fullmatch(r'[(<)|(>)|(\&)|(\|)|(\%)|(\+)|(\-)|(=)|(!)]', self.currentChar):
+            self.currentCharIsChecked = 1
+            self.lexeme += self.currentChar
+            self.nextToken()
+        else:
+            self.state = 0
+            self.nextToken()
+    
     def recognized(self):
         self.currentCharIsChecked = 1
         self.lexeme += self.currentChar
         self.nextChar()
-
-    def isOperator(self):
-        if self.currentCharIsChecked == 1:
-            return
-        elif re.fullmatch(r'[(<)|(>)|(\&)|(\|)|(\*)|(\%)|(\+)|(\-)|(>=)|(<=)|(!=)|(=)]', self.currentChar):
-            self.recognized
-        else:
-            self.nextToken()
-        
+    
         
     # def isSemicolon():
     #     if self.currentCharIsChecked:
@@ -116,22 +130,3 @@ class Lexer:
     #         self.state = 1
     #         self.nextChar()
 
-class Brackets:
-    def __init__(self) -> None:
-        self.round = 0
-        self.square = 0
-        self.curvy = 0
-        
-class Token:
-    def __init__(self, lexeme):
-        self.category = self.getTokenCategory(lexeme)
-        self.value = lexeme
-        self.line = 0
-        self.column = 0
-        self.error = 0
-    
-    def getTokenCategory(self, lexeme):
-        for tkCategory in tkCategories:
-            if re.fullmatch(tkCategories[tkCategory], lexeme) != None:
-                return tkCategory
-        return 'UNKNOW'

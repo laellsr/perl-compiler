@@ -1,10 +1,10 @@
 import sys
-from tkCategory import *
+from token import *
 from lexer import *
 
 def run(lexer) -> None:
     while lexer.currentFilePosition < lexer.fileSize:
-        print(lexer.currentChar, lexer.currentFilePosition)
+        # print(lexer.currentChar, lexer.currentFilePosition)
         match lexer.state:
             case 0:
                 # initial
@@ -25,6 +25,9 @@ def run(lexer) -> None:
             case 3:
                 # reserved word
                 lexer.isReservedWord()
+            case 4:
+                # double operator
+                lexer.isDoubleOperator()
             case default:
                 pass
     if lexer.lexeme != '':

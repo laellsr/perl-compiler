@@ -1,3 +1,25 @@
+import re
+
+class Brackets:
+    def __init__(self) -> None:
+        self.round = 0
+        self.square = 0
+        self.curvy = 0
+        
+class Token:
+    def __init__(self, lexeme):
+        self.category = self.getTokenCategory(lexeme)
+        self.value = lexeme
+        self.line = 0
+        self.column = 0
+        self.error = 0
+    
+    def getTokenCategory(self, lexeme):
+        for tkCategory in tkCategories:
+            if re.fullmatch(tkCategories[tkCategory], lexeme) != None:
+                return tkCategory
+        return 'UNKNOW'
+
 # necessário começar com as palavras reservadas
 # ao contrário dará erro de unknow por causa da condicional no nextToken
 
@@ -24,8 +46,8 @@ tkCategories = {
     "INTEGER_NUMBER" : r"^[-]{0,1}[0-9]*",
     "STRING" : r'"[^”]*"',
     "FIM" : "", #fim?
-    "SUBROUTINE_IDENTIFIER" : r'^[a-zA-Z0-9_]*',
-    "FUNC_IDENTIFIER": r'^[a-zA-Z0-9_]*',
+    "SUBROUTINE_IDENTIFIER" : r'^[a-zA-Z0-9_]{2,}',
+    "FUNC_IDENTIFIER": r'^[a-zA-Z0-9_]{2,}',
     "SCALAR_IDENTIFIER": r'^[$][a-zA-Z0-9_]*',
     "VECTOR_IDENTIFIER": r'^[@][a-zA-Z0-9_]*',
     "OPERATOR_LT_NUMERIC": r'<',
