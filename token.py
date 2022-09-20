@@ -42,6 +42,11 @@ tkCategories = {
     "RESERVED_EXIT" : r'exit',
     "RESERVED_METHOD" : r'method',
     "RESERVED_SUBROUTINE" : r'sub',
+    "LEFT_PAREN": r'\(',
+    "RIGHT_PAREN": r'\)',
+    "LEFT_BRACE": r'\{',
+    "RIGHT_BRACE" : r'\}',
+    "SEMICOLON": r';',
     "COMMENT_LINE": r'#.*',
     "FLOAT_NUMBER" : r"^[\+-]{0,1}[\d]+[\.][\d]+$",
     "INTEGER_NUMBER" : r"^[\+-]{0,1}[0-9]+",
@@ -68,12 +73,7 @@ tkCategories = {
     "OPERATOR_LE_NUMERIC": r'<=',
     "OPERATOR_EQ_NUMERIC": r'==',
     "OPERATOR_NE_NUMERIC" : r'!=',
-    "OPERATOR_ASSIGN": r'=',
-    "LEFT_PAREN": r'\(',
-    "RIGHT_PAREN": r'\)',
-    "LEFT_BRACE": r'\{',
-    "RIGHT_BRACE" : r'\}',
-    "SEMICOLON": r';'
+    "OPERATOR_ASSIGN": r'='
 }
 
 reservedWords = {

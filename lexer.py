@@ -6,7 +6,7 @@ class Lexer:
         self.file = file
         self.fileSize = len(self.file)
         self.currentFilePosition = 0
-        self.crrentLinePosition = 0
+        self.currentLinePosition = 0
         self.state = 0
         self.lexeme = ""
         self.currentChar = self.file[self.currentFilePosition]
@@ -189,7 +189,8 @@ class Lexer:
                     if self.file[j] == ')':
                         break
                     j += 1
-                if re.fullmatch(tkCategories['ARRAY_OF_NUMBERS'], newLexeme) or re.fullmatch(tkCategories['ARRAY_OF_STRINGS'], newLexeme):
+          
+                if re.fullmatch(tkCategories['ARRAY_OF_NUMBERS'], newLexeme) or (re.fullmatch(tkCategories['ARRAY_OF_STRINGS'], newLexeme) and len(newLexeme)>2):
                     self.lexeme = newLexeme
                     self.currentFilePosition = j
                     self.currentCharIsChecked = 1
