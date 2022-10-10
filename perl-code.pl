@@ -18,4 +18,4 @@ print sand();
 
 @arrayOfNumbers = (-10,+10, -30.30 , 450.40);
 
-@arrayOfStrings = ("Let's do it!", 'Perl lexer is ready?');
+@arrayOfStrings = ("Let's do it!", 'Is perl lexer ready?');
