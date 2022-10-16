@@ -2,7 +2,7 @@ import sys
 import re
 from token import *
 from lexer import *
-
+from parser import *
 def run(lexer) -> None:
     while lexer.currentFilePosition < lexer.fileSize:
         match lexer.state:
@@ -69,6 +69,9 @@ else:
     # fileString = re.sub(r'\s', '', fileString)
     lexer = Lexer(fileString)
     run(lexer)
+    parser = Parser(lexer.tokens)
+    parser.Start()
+
     printLexerTokenList(lexer)
     createTxtFile(lexer)
 finally:

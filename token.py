@@ -46,6 +46,8 @@ tkCategories = {
     "RIGHT_PAREN": r'\)',
     "LEFT_BRACE": r'\{',
     "RIGHT_BRACE" : r'\}',
+    "LEFT_BRACKETS": r'\[',
+    "RIGHT_BRACKETS" : r'\]',
     "SEMICOLON": r';',
     "COMMENT_LINE": r'#.*',
     "FLOAT_NUMBER" : r"^[\+-]{0,1}[\d]+[\.][\d]+$",
