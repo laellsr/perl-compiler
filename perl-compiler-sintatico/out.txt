@@ -35,8 +35,6 @@
 <OPERATOR_ASSIGN,=>
 <STRING,'sand()'>
 <SEMICOLON,;>
-<COMMENT_LINE,#falta implementar chamada de função>
-<COMMENT_LINE,#falta implementar return;>
 <RESERVED_PRINT,print>
 <STRING_PRINT,"$x">
 <SEMICOLON,;>
