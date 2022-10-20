@@ -3,6 +3,7 @@ import re
 from token import *
 from lexer import *
 from parser import *
+
 def run(lexer) -> None:
     while lexer.currentFilePosition < lexer.fileSize:
         match lexer.state:
@@ -44,7 +45,6 @@ def run(lexer) -> None:
     if lexer.lexeme != '':
             lexer.nextToken()
     
-
 def printLexerTokenList(lexer) -> None:
     for token in lexer.tokens:
         print("<" + token.category + "," + token.value + ">")
@@ -66,12 +66,10 @@ else:
     print(f"Compilando {sys.argv[1]}")
     fileString = file.read()
     file.close()
-    # fileString = re.sub(r'\s', '', fileString)
     lexer = Lexer(fileString)
     run(lexer)
     parser = Parser(lexer.tokens)
     parser.Start()
-
     printLexerTokenList(lexer)
     createTxtFile(lexer)
 finally:
