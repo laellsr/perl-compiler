@@ -71,9 +71,9 @@ else:
     # fileString = re.sub(r'\s', '', fileString)
     lexer = Lexer(fileString)
     run(lexer)
-    parser = Parser(lexer.tokens)
-    parser.File_Item()
     printLexerTokenList(lexer)
     createTxtFile(lexer)
+    parser = Parser(lexer.tokens)
+    parser.File_Item()
 finally:
     pass

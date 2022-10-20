@@ -104,7 +104,7 @@ class Lexer:
     def isOperator(self):
         if self.currentCharIsChecked == 1:
             return
-        elif re.fullmatch(r'[\|\*\%]', self.currentChar):
+        elif re.fullmatch(r'[\|\*\%\/]', self.currentChar):
             if self.lexeme != '':
                 self.nextToken()
             else:
