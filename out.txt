@@ -177,9 +177,5 @@
 <RIGHT_BRACE,}>
 <VECTOR_IDENTIFIER,@arrayOfStrings>
 <OPERATOR_ASSIGN,=>
-<LEFT_PAREN,(>
-<STRING_PRINT,"Let's do it!">
-<SEMICOLON,;>
-<STRING,'Is perl lexer ready?'>
-<RIGHT_PAREN,)>
+<ARRAY_OF_STRINGS,("Let's do it!", 'Is perl lexer ready?')>
 <SEMICOLON,;>
