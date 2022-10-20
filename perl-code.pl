@@ -1,24 +1,53 @@
-# # perl program
-# $negative_float = -123.4;
+# Calculadora
 
-# # $negative_float++;
-# $prash01 = 'string';
+$numero1 = 10.5;
+$numero2 = $numero1 * 3;
 
-# if( $prash01 != $prash01 ){
-#     print "$prash01";
-# } 
+print "Operação com $numero1 e $numero2";
 
-# sub sand( $one_  ) {
-#     return $one_ + 1;
-# }
+sub soma($numero1, $numero2){
+    $res = $numero1 + $numero2;
+    return $res;
+}
 
-# $x = sand(); #falta implementar chamada de função
-# #falta implementar return;
+sub subtr($numero1, $numero2){
+    $res = $numero1 - $numero2;
+    return $res;
+}
 
-# print "$x";
+sub multi($numero1, $numero2){
+    $res = $numero1 * $numero2;
+    return $res;
+}
 
-# @arrayOfNumbers = (-10,+10, -30.30 , 450.40);
+sub div($numero1, $numero2){
+    $res = $numero1 / $numero2;
+    $erro = 'não podemos dividir por zero';
+    if ( $numero2 == 0 ){
+        return $erro;
+    }
+    return $res;
+}
 
-# @arrayOfStrings = ("Let's do it!", 'Is perl lexer ready?'
+sub mod($numero1, $numero2){
+    $res = $numero1 % $numero2;
+    return $res;
+}
 
-$ = 2;
+$soma = soma();
+$subtr = subtr();
+$multi = multi();
+$div = div();
+$mod = mod();
+
+say "$soma, $subtr, $multi, $div, $mod";
+
+@arrayOfNumbers = (-10, +10, -30.30 , 450.40);
+
+$cont = 3;
+while ( $cont > 0 ){
+    print "$arrayOfNumbers[$cont]";
+    $cont = $cont - 1;
+}
+
+@arrayOfStrings = ("Let's do it!", 'Is perl lexer ready?');

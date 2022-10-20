@@ -3,6 +3,7 @@ import re
 from token import *
 from lexer import *
 from parser import *
+
 def run(lexer) -> None:
     while lexer.currentFilePosition < lexer.fileSize:
         match lexer.state:
@@ -69,8 +70,6 @@ else:
     file.close()
     lexer = Lexer(fileString)
     run(lexer)
-    parser = Parser(lexer.tokens)
-    parser.Start()
     printLexerTokenList(lexer)
     createTxtFile(lexer)
     parser = Parser(lexer.tokens)

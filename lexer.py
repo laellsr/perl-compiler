@@ -180,6 +180,7 @@ class Lexer:
                 self.recognized(next=False)
             else:
                 self.nextToken()
+                
     def isComma(self):
         if self.currentCharIsChecked == 1:
             return
