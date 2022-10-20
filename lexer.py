@@ -104,7 +104,7 @@ class Lexer:
     def isOperator(self):
         if self.currentCharIsChecked == 1:
             return
-        elif re.fullmatch(r'[\|\*\%]', self.currentChar):
+        elif re.fullmatch(r'[\|\*\%\/]', self.currentChar):
             if self.lexeme != '':
                 self.nextToken()
             else:
@@ -165,7 +165,13 @@ class Lexer:
             return
         elif re.fullmatch(r'[{}]', self.currentChar):
             self.recognized(next=False)
-       
+    
+    def isBrackets(self):
+        if self.currentCharIsChecked == 1:
+            return
+        elif re.fullmatch(r'\[', self.currentChar) or re.fullmatch(r'\]', self.currentChar) :
+            self.recognized(next=False)
+
     def isSemicolon(self):
         if self.currentCharIsChecked == 1:
             return
@@ -174,7 +180,12 @@ class Lexer:
                 self.recognized(next=False)
             else:
                 self.nextToken()
-        
+    def isComma(self):
+        if self.currentCharIsChecked == 1:
+            return
+        elif re.fullmatch(r'\,', self.currentChar) :
+            self.recognized(next=False)
+
     def isCurvyBracket(self):
         if self.currentCharIsChecked == 1:
             return

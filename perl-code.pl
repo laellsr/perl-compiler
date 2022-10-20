@@ -1,21 +1,24 @@
-# perl program
+# # perl program
+# $negative_float = -123.4;
 
-$negative_float = -123.4;
+# # $negative_float++;
+# $prash01 = 'string';
 
-$negative_float++;
+# if( $prash01 != $prash01 ){
+#     print "$prash01";
+# } 
 
-$prash01 = "string";
+# sub sand( $one_  ) {
+#     return $one_ + 1;
+# }
 
-if( $prash01 != 'string' ){
-    return 1;
-} 
+# $x = sand(); #falta implementar chamada de função
+# #falta implementar return;
 
-sub sand( $one_ = 1 ) {
-    return $one_ + 1;
-}
+# print "$x";
 
-print sand();
+# @arrayOfNumbers = (-10,+10, -30.30 , 450.40);
 
-@arrayOfNumbers = (-10,+10, -30.30 , 450.40);
+# @arrayOfStrings = ("Let's do it!", 'Is perl lexer ready?'
 
-@arrayOfStrings = ("Let's do it!", 'Is perl lexer ready?');
+$ = 2;

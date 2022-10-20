@@ -3,7 +3,6 @@ import re
 from token import *
 from lexer import *
 from parser import *
-
 def run(lexer) -> None:
     while lexer.currentFilePosition < lexer.fileSize:
         match lexer.state:
@@ -17,6 +16,8 @@ def run(lexer) -> None:
                 lexer.isOperator()
                 lexer.isQuote()
                 lexer.isScope()
+                lexer.isBrackets()
+                lexer.isComma()
                 lexer.isCurvyBracket()
                 lexer.isSemicolon()
                 lexer.isCommentLine()
@@ -72,5 +73,7 @@ else:
     parser.Start()
     printLexerTokenList(lexer)
     createTxtFile(lexer)
+    parser = Parser(lexer.tokens)
+    parser.File_Item()
 finally:
     pass
