@@ -112,7 +112,7 @@ class Lexer:
         elif re.fullmatch(r'[<>\&\|\%\+\-=!]', self.currentChar):
             if self.lexeme != '':
                 self.nextToken()
-            if re.search(r'NUMBER|IDENTIFIER', self.tokens[len(self.tokens)-1].category) and re.fullmatch(r'[^<>\&\|\%\+\-=!]', self.file[self.currentFilePosition+1]):
+            elif re.search(r'NUMBER|IDENTIFIER', self.tokens[len(self.tokens)-1].category) and self.currentFilePosition+1 < self.fileSize and re.fullmatch(r'[^<>\&\|\%\+\-=!]', self.file[self.currentFilePosition+1]):
                 self.recognized(next=False)
             else:
                 self.state = 4
@@ -153,6 +153,7 @@ class Lexer:
                     break
                 newLexeme += self.file[j]
                 j += 1
+            j = j - 1
             self.currentFilePosition = j
             self.lexeme = newLexeme
             self.currentChar = self.file[j]
