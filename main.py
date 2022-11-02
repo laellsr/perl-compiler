@@ -4,24 +4,32 @@ from token import *
 from lexer import *
 from parser import *
 
+caseZeroFuncs = ["isPass","isDigit","isLetter","isDollar","isSign","isOperator","isQuote","isScope","isBrackets","isComma","isCurvyBracket","isSemicolon","isCommentLine"]
+
 def run(lexer) -> None:
     while lexer.currentFilePosition < lexer.fileSize:
         match lexer.state:
             case 0:
                 # initial
-                lexer.isPass()
-                lexer.isDigit()
-                lexer.isLetter()
-                lexer.isDollar()
-                lexer.isSign()
-                lexer.isOperator()
-                lexer.isQuote()
-                lexer.isScope()
-                lexer.isBrackets()
-                lexer.isComma()
-                lexer.isCurvyBracket()
-                lexer.isSemicolon()
-                lexer.isCommentLine()
+                # lexer.isPass()
+                # lexer.isDigit()
+                # lexer.isLetter()
+                # lexer.isDollar()
+                # lexer.isSign()
+                # lexer.isOperator()
+                # lexer.isQuote()
+                # lexer.isScope()
+                # lexer.isBrackets()
+                # lexer.isComma()
+                # lexer.isCurvyBracket()
+                # lexer.isSemicolon()
+                # lexer.isCommentLine()
+                i = 0
+                caseZeroFuncsSize = len(caseZeroFuncs)
+                while lexer.state == 0 and i < caseZeroFuncsSize:
+                    callMe = getattr(lexer, caseZeroFuncs[i])
+                    callMe()
+                    i += 1
             case 1:
                 # identifier: scalar, array, func
                 lexer.isIdentifier()

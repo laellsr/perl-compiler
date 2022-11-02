@@ -13,6 +13,7 @@ class Token:
         self.line = 0
         self.column = 0
         self.error = 0
+        print(self.value)
     
     def getTokenCategory(self, lexeme):
         for tkCategory in tkCategories:
