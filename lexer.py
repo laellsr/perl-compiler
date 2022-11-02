@@ -6,7 +6,8 @@ class Lexer:
         self.file = file
         self.fileSize = len(self.file)
         self.currentFilePosition = 0
-        self.currentLinePosition = 0
+        self.currentCodeFileLinePosition = 0
+        self.currentCodeFileColumnPosition = 0
         self.state = 0
         self.lexeme = ""
         self.currentChar = self.file[self.currentFilePosition]
@@ -15,13 +16,14 @@ class Lexer:
         self.brackets = Brackets()
         
     def nextChar(self) -> None:
+        self.currentCodeFileColumnPosition += 1
         self.currentFilePosition += 1
         if self.currentFilePosition < self.fileSize:
             self.currentChar = self.file[self.currentFilePosition]
             self.currentCharIsChecked = 0
     
     def nextToken(self) -> None:
-        token = Token(self.lexeme)
+        token = Token(self.lexeme, self.currentCodeFileColumnPosition-len(self.lexeme), self.currentCodeFileLinePosition)
         self.tokens.append(token)
         self.lexeme = ""
         self.state = 0
@@ -91,6 +93,9 @@ class Lexer:
         if self.currentCharIsChecked == 1:
             return
         elif self.currentChar == ' ' or self.currentChar == '\n' or self.currentChar == '\t':
+            if self.currentChar == '\n':
+                self.currentCodeFileLinePosition += 1
+                self.currentCodeFileColumnPosition = 0
             self.currentCharIsChecked = 1
             self.nextChar()
     
@@ -160,7 +165,6 @@ class Lexer:
             self.currentCharIsChecked = 1
             self.nextToken()
             
-            
     def isScope(self):
         if self.currentCharIsChecked == 1:
             return
@@ -212,3 +216,8 @@ class Lexer:
                     self.recognized(next=False)
         elif self.currentChar == ')':
             self.recognized(next=False)
+            
+    # def lexerError(self, token):
+    #     if token.category == 'UNKNOW':
+    #         print("\033[1;31m", f"ERRO! Impossível definir {token.lexema} na posição {self.currentCodeFileColumnPosition+1} da linha {self.currentCodeFileLinePosition+1}" ,"\033[0;0m")
+    #         exit()

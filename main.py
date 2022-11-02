@@ -11,19 +11,6 @@ def run(lexer) -> None:
         match lexer.state:
             case 0:
                 # initial
-                # lexer.isPass()
-                # lexer.isDigit()
-                # lexer.isLetter()
-                # lexer.isDollar()
-                # lexer.isSign()
-                # lexer.isOperator()
-                # lexer.isQuote()
-                # lexer.isScope()
-                # lexer.isBrackets()
-                # lexer.isComma()
-                # lexer.isCurvyBracket()
-                # lexer.isSemicolon()
-                # lexer.isCommentLine()
                 i = 0
                 caseZeroFuncsSize = len(caseZeroFuncs)
                 while lexer.state == 0 and i < caseZeroFuncsSize:

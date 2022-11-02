@@ -7,13 +7,11 @@ class Brackets:
         self.curvy = 0
         
 class Token:
-    def __init__(self, lexeme):
+    def __init__(self, lexeme, column, line):
         self.category = self.getTokenCategory(lexeme)
         self.value = lexeme
-        self.line = 0
-        self.column = 0
-        self.error = 0
-        print(self.value)
+        self.line = column+1
+        self.column = line+1
     
     def getTokenCategory(self, lexeme):
         for tkCategory in tkCategories:
