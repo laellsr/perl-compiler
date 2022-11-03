@@ -1,7 +1,7 @@
 # Calculadora
 
 $numero1 = 10.5;
-$numero2 = $numero1 * 3
+$numero2 = $numero1 * 3;
 
 print "Operação com $numero1 e $numero2";
 

@@ -65,10 +65,13 @@ else:
     file.close()
     lexer = Lexer(fileString)
     run(lexer)
+    print ("\n" + "\033[1;34m" + "Lista de Tokens da Análise Léxica:\n" + "\033[0;0m")
     printLexerTokenList(lexer)
     createTxtFile(lexer)
+    print ("\n" + "\033[1;34m" + "Analisador Sintático:\n" + "\033[0;0m")
     parser = Parser(lexer.tokens)
     parser.File_Item()
+    print ()
     parser.Print_Symbol_Table()
 finally:
     pass

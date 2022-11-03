@@ -334,6 +334,7 @@ class Parser:
         
     def Print_Symbol_Table(self):
         if self.erro == 0:
+            print(self.BLUE + "Tabela de Símbolos:\n" + self.RESET)
             print("  ID      |      TYPE")
             for key, value in self.table.hash.items():
                 print(f"{key} -> {value}")
