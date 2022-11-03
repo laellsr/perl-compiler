@@ -1,7 +1,6 @@
 from operator import ne
 from symbol_table import * 
 import sys
-import re
 class Parser:
     def __init__(self, token):
         self.token = token
@@ -15,6 +14,7 @@ class Parser:
         self.RESET = "\033[0;0m"
         self.BLUE = "\033[1;34m"
         self.GREEN = "\033[0;32m"
+        self.erro = 0
     # Identifica o proximo token
     def nextToken(self):
         self.cont += 1
@@ -23,22 +23,34 @@ class Parser:
             self.tk = self.token[self.cont]
         else:
             if self.left_brace != 0:
+                self.erro = 1
                 print(self.RED + 'ERRO! A quantidade de chaves está errada.'  + self.RESET)
-            print(self.GREEN + 'Compilation successful!' + self.RESET)
+            if self.erro == 0:
+                if self.tk.category == 'SEMICOLON' or self.tk.category == 'RIGHT_BRACE':
+                    print(self.GREEN + 'Compilation successful!' + self.RESET)
             self.tk.category = ''
             
     # Identificadores ou Numeros
     def Atom_Expr(self):
         if self.tk.category != 'INTEGER_NUMBER' and self.tk.category != 'FLOAT_NUMBER' and self.tk.category != 'SCALAR_IDENTIFIER':
             self.Sub_Names()
-            self.Sub_Parameters()
+        else:
+            self.nextToken()
                 
     # Operadores para um bloco de condição            
     def OPERATOR(self):
-        if self.tk.category != 'OPERATOR_PLUS' and self.tk.category != 'OPERATOR_MINUS' and self.tk.category != 'OPERATOR_MUL' and self.tk.category != 'OPERATOR_DIV' and self.tk.category != 'OPERATOR_AND' and self.tk.category != 'OPERATOR_OR' and self.tk.category != 'OPERATOR_MOD' and self.tk.category != 'OPERATOR_LT_NUMERIC' and self.tk.category != 'OPERATOR_GT_NUMERIC' and self.tk.category != 'OPERATOR_GE_NUMERIC' and self.tk.category != 'OPERATOR_LE_NUMERIC' and self.tk.category != 'OPERATOR_EQ_NUMERIC' and self.tk.category != 'OPERATOR_NE_NUMERIC' :
+        if self.tk.category == 'OPERATOR_ASSIGN':
             before_error = self.token[self.cont -1]
-            raise NameError(before_error.value +self.BLUE +  " <\n" + self.RESET + self.RED + 'ERRO! O valor ' + self.tk.value + ' não é um símbolo válido!' + self.RESET)
-        
+            self.erro = 1
+            print(before_error.value +self.BLUE +  " <\n" + self.RESET + self.RED + 'ERRO! O valor ' + self.tk.value + ' não é um símbolo válido para o local!' + self.RESET)
+            self.nextToken()
+        elif self.tk.category != 'OPERATOR_PLUS' and self.tk.category != 'OPERATOR_MINUS' and self.tk.category != 'OPERATOR_MUL' and self.tk.category != 'OPERATOR_DIV' and self.tk.category != 'OPERATOR_AND' and self.tk.category != 'OPERATOR_OR' and self.tk.category != 'OPERATOR_MOD' and self.tk.category != 'OPERATOR_LT_NUMERIC' and self.tk.category != 'OPERATOR_GT_NUMERIC' and self.tk.category != 'OPERATOR_GE_NUMERIC' and self.tk.category != 'OPERATOR_LE_NUMERIC' and self.tk.category != 'OPERATOR_EQ_NUMERIC' and self.tk.category != 'OPERATOR_NE_NUMERIC' :
+            before_error = self.token[self.cont -1]
+            self.erro = 1
+            print(before_error.value +self.BLUE +  " <\n" + self.RESET + self.RED + 'ERRO! O valor ' + self.tk.value + ' não é um símbolo válido para o local!' + self.RESET)
+        else:
+            self.nextToken()
+            
     # Count Braces
     def Brace_Verification(self):
         if self.left_brace == 1:
@@ -48,38 +60,45 @@ class Parser:
             self.left_brace -= 1
             self.File_Item()
         else:
-            raise NameError(self.RED +'ERRO! A quantidade de chaves está errada.' + self.RESET)
+            self.erro = 1
+            print(self.RED +'ERRO! A quantidade de chaves está errada.' + self.RESET)
                 
     # BNF Vars ----------------------------------------------------------------------------------------------
     
     def Op_Declaration(self): #reconhece uma expressão com operador
         if self.tk.category != 'OPERATOR_PLUS' and self.tk.category != 'OPERATOR_MINUS' and self.tk.category != 'OPERATOR_MUL' and self.tk.category != 'OPERATOR_DIV' and self.tk.category != 'OPERATOR_MOD':
             before_error = self.token[self.cont -1]
-            raise NameError( before_error.value + self.BLUE +  " <\n" + self.RESET + self.RED + 'ERRO! É esperado um ; ou um operador' + self.RESET)   
-        self.nextToken()             
-        self.Atom_Expr()
-        self.nextToken()             
-        if self.tk.category == 'SEMICOLON':
-            self.File_Item()            
-        else:
-            self.Op_Declaration()
+            self.erro = 1
+            print( before_error.value + self.BLUE +  " <\n" + self.RESET + self.RED + 'ERRO! É esperado um ; ou um operador.' + self.RESET) 
+            self.cont -= 1
+            self.File_Item() 
+        else: 
+            self.nextToken()             
+            self.Atom_Expr()             
+            if self.tk.category == 'SEMICOLON':
+                self.File_Item()            
+            else:
+                self.Op_Declaration()
                     
     def Operator_Assign(self):
         self.nextToken()
         if self.tk.category != 'OPERATOR_ASSIGN':
             before_error = self.token[self.cont -1]
-            raise NameError( before_error.value + self.BLUE +  " <\n" + self.RESET + self.RED +"ERRO! Era esperado um símbolo de atribuição." + self.RESET)
+            self.erro = 1
+            print( before_error.value + self.BLUE +  " <\n" + self.RESET + self.RED +"ERRO! Era esperado um símbolo de atribuição." + self.RESET)
+        else:
+            self.nextToken()
                 
     def Values(self):
         if self.tk.category == 'STRING':
             self.nextToken()
             if self.tk.category != 'SEMICOLON':
                 before_error = self.token[self.cont -1]
-                raise NameError( before_error.value + self.BLUE +  " <\n" + self.RESET + self.RED + "ERRO! Era esperado um ';'"  ) 
+                self.erro = 1
+                print( before_error.value + self.BLUE +  " <\n" + self.RESET + self.RED + "ERRO! Era esperado um ';'"  ) 
             self.File_Item() 
         else:
             self.Atom_Expr()
-            self.nextToken()
             if self.tk.category == 'SEMICOLON':
                 self.File_Item()
             else:
@@ -87,28 +106,36 @@ class Parser:
             
     def Scalar_Declaration(self): 
         self.Operator_Assign()
-        self.nextToken()
         if self.table.hash.get(self.tk.value) != None:
             self.table.add(self.id_current,self.table.hash[self.tk.value])
         else:
             self.table.add(self.id_current, self.tk.category)
-        self.Values()
+        if self.tk.category != '':
+            self.Values()
+        else:
+            before_error = self.token[self.cont -1]
+            self.erro = 1
+            print(before_error.value + self.BLUE +  self.BLUE +  " <\n" + self.RESET + self.RESET + self.RED +"ERRO! era esperado um identificador ou um nome de função"+ self.RESET)
+        
         
     def Array_Verification(self):
         if self.tk.category != 'ARRAY_OF_NUMBERS' and self.tk.category != 'ARRAY_OF_STRINGS':
             before_error = self.token[self.cont -1]
-            raise NameError(before_error.value + self.BLUE +  self.BLUE +  " <\n" + self.RESET + self.RESET + self.RED +"ERRO na declaração de Array"+ self.RESET)
-        self.nextToken() 
-        if self.tk.category != 'SEMICOLON':
-            before_error = self.token[self.cont -1]
-            raise NameError(before_error.value + self.BLUE +  " <\n" + self.RESET + self.RED + "ERRO! Era esperado um ';'" + self.RESET)
+            self.erro = 1
+            print(before_error.value + self.BLUE +  self.BLUE +  " <\n" + self.RESET + self.RESET + self.RED +"ERRO na declaração de Array"+ self.RESET)
+        else:
+            self.nextToken() 
+            if self.tk.category != 'SEMICOLON':
+                before_error = self.token[self.cont -1]
+                self.erro = 1
+                print(before_error.value + self.BLUE +  " <\n" + self.RESET + self.RED + "ERRO! Era esperado um ';'" + self.RESET)
                     
     def Vector_Declaration(self):
         self.Operator_Assign()
-        self.nextToken() 
         self.table.add(self.id_current, self.tk.category)
-        self.Array_Verification() 
-        self.File_Item()
+        if self.tk.category != '':
+            self.Array_Verification() 
+            self.File_Item()
         
     # BNF print ------------------------------------------------------------------------------------------------
     
@@ -116,16 +143,20 @@ class Parser:
         self.nextToken()
         if self.tk.category != 'STRING_PRINT':
             before_error = self.token[self.cont -1]
-            raise NameError(before_error.value + self.BLUE +  " <\n" + self.RESET+ self.RED + "ERRO! Era esperado uma ASPAS DUPLAS" + self.RESET)
+            self.erro = 1
+            print(before_error.value + self.BLUE +  " <\n" + self.RESET+ self.RED + "ERRO! Era esperado uma ASPAS DUPLAS" + self.RESET)
+        else: 
+            self.nextToken()
             
     def Print(self):
         self.Content_Print()
-        self.nextToken()
-        if self.tk.category == 'SEMICOLON':
-            self.File_Item()            
+        if self.tk.category != '':
+            if self.tk.category == 'SEMICOLON':
+                self.File_Item()
         else:
             before_error = self.token[self.cont -1]
-            raise NameError( before_error.value + self.BLUE +  " <\n" + self.RESET + self.RED +  "ERRO! Era esperado um ;"+ self.RESET)
+            self.erro = 1
+            print( before_error.value + self.BLUE +  " <\n" + self.RESET + self.RED +  "ERRO! Era esperado um ;"+ self.RESET)
         
     # BNF Say ------------------------------------------------------------------------------------------------------------------------
     
@@ -135,18 +166,19 @@ class Parser:
     # BNF If ------------------------------------------------------------------------------------------------------------------------
     
     def Expr_Op_1(self):
-        self.nextToken()
         if self.tk.category != 'RIGHT_PAREN':
-            self.OPERATOR()
+            if self.tk.category == 'LEFT_BRACE':
+                before_error = self.token[self.cont -1]
+                self.erro = 1
+                print(before_error.value + self.BLUE +  " <\n" + self.RESET + self.RED +"ERRO! Era esperado um )"+ self.RESET)
+            else:
+                self.OPERATOR()
+                self.Atom_Expr()
+                self.Expr_Op_1()
+        else:
             self.nextToken()
-            self.Atom_Expr()
-            self.Expr_Op_1()
     
-    def Expr(self): #reconhece uma expressão com operador
-        self.Atom_Expr()
-        self.nextToken()
-        self.OPERATOR()
-        self.nextToken()
+    def Expr(self): #reconhece um id
         self.Atom_Expr()
         self.Expr_Op_1()
     
@@ -154,31 +186,37 @@ class Parser:
         self.nextToken()
         if self.tk.category != 'LEFT_PAREN':
             before_error = self.token[self.cont -1]
-            raise NameError(before_error.value + self.BLUE +  " <\n" + self.RESET + self.RED +"ERRO! Era esperado uma abre parênteses"+ self.RESET)
-        self.nextToken()
+            self.erro = 1
+            print(before_error.value + self.BLUE +  " <\n" + self.RESET + self.RED +"ERRO! Era esperado um ("+ self.RESET)
+        else:
+            self.nextToken()
         self.Expr()
         
     def Block(self):
         if self.tk.category != 'LEFT_BRACE':
             before_error = self.token[self.cont -1]
-            raise NameError(before_error.value + self.BLUE +  " <\n" + self.RESET + self.RED + "ERRO! Era esperado um '{'" + self.RESET)
+            self.erro = 1
+            print(before_error.value + self.BLUE +  " <\n" + self.RESET + self.RED + "ERRO! Era esperado um '{'" + self.RESET)
+            self.cont -= 1
         self.left_brace += 1
         self.File_Item()
         
     def Block_Sub(self):
         if self.left_brace != 0:
             before_error = self.token[self.cont -1]
-            raise NameError(before_error.value + self.BLUE +  " <\n" + self.RESET + self.RED + "ERRO! Não pode criar subroutina dentro de uma função" + self.RESET)
+            self.erro = 1
+            print(before_error.value + self.BLUE +  " <\n" + self.RESET + self.RED + "ERRO! Não pode criar subroutina dentro de uma função" + self.RESET)
         if self.tk.category != 'LEFT_BRACE':
             before_error = self.token[self.cont -1]
-            raise NameError(before_error.value + self.BLUE +  " <\n" + self.RESET + self.RED + "ERRO! Era esperado um '{'" + self.RESET)
+            self.erro = 1
+            print(before_error.value + self.BLUE +  " <\n" + self.RESET + self.RED + "ERRO! Era esperado um '{'" + self.RESET)
+            self.cont -= 1
         self.left_brace += 1
         self.sub_ativa = 1
         self.File_Item()
     
     def Conditional_Block(self):
         self.Condition_Expr()
-        self.nextToken()
         self.Block()
     
     def If(self):
@@ -196,38 +234,75 @@ class Parser:
     def Sub_Names(self):
         if self.tk.category != 'SUBROUTINE_IDENTIFIER':
             before_error = self.token[self.cont -1]
-            raise NameError(before_error.value + " <\n" + self.RED +"ERRO! Era esperado um nome para a subrotina ou um identificador"+ self.RESET)
+            self.erro = 1
+            print(before_error.value + self.BLUE + " <\n" + self.RESET + self.RED +"ERRO! Era esperado um identificador ou um nome para a subrotina"+ self.RESET)
+            self.cont -= 1
+        self.Sub_Parameters()
+            
+    def Sub_Names2(self):
+        if self.tk.category != 'SUBROUTINE_IDENTIFIER':
+            before_error = self.token[self.cont -1]
+            self.erro = 1
+            print(before_error.value + self.BLUE + " <\n" + self.RESET + self.RED +"ERRO! Era esperado um identificador ou um nome para a subrotina"+ self.RESET)
+            self.cont -= 1
         
     def Comma(self):
         if self.tk.category != 'COMMA':
             before_error = self.token[self.cont -1]
-            raise NameError(before_error.value + self.BLUE +  " <\n" + self.RESET + self.RED +"ERRO! Era esperado uma ,"+ self.RESET)
+            self.erro = 1
+            print(before_error.value + self.BLUE +  " <\n" + self.RESET + self.RED +"ERRO! Era esperado uma ,"+ self.RESET)
+        else:
+            self.nextToken()
+            
         
     def Scalar_Identifier_Error(self):
         if self.tk.category != 'SCALAR_IDENTIFIER':
             before_error = self.token[self.cont -1]
-            raise NameError(before_error.value + self.BLUE +  " <\n" + self.RESET  + self.RED +"ERRO! Era esperado um identificador ou um )"+ self.RESET)
+            self.erro = 1
+            print(before_error.value + self.BLUE +  " <\n" + self.RESET  + self.RED +"ERRO! Era esperado um identificador ou um )"+ self.RESET)
+            self.cont -= 1
+        else:
+            self.End_Parameters()
+            
+    def Scalar_Identifier_Error2(self):
+        if self.tk.category != 'SCALAR_IDENTIFIER':
+            before_error = self.token[self.cont -1]
+            self.erro = 1
+            print(before_error.value + self.BLUE +  " <\n" + self.RESET  + self.RED +"ERRO! Era esperado um identificador ou um )"+ self.RESET)
+            self.cont -= 1
+        self.End_Parameters()
             
     def End_Parameters(self):
         self.nextToken()
         if self.tk.category != 'RIGHT_PAREN':
             self.Comma()
-            self.nextToken()
-            self.Scalar_Identifier_Error()
-            self.End_Parameters()
+            self.Scalar_Identifier_Error2()
         
     def Sub_Parameters(self):
         self.nextToken()
         if self.tk.category != 'LEFT_PAREN':
             before_error = self.token[self.cont -1]
-            raise NameError(before_error.value + self.BLUE +  " <\n" + self.RESET  + self.RED +"ERRO! Era esperado um ("+ self.RESET)
-        self.nextToken()
+            self.erro = 1
+            print(before_error.value + self.BLUE +  " <\n" + self.RESET  + self.RED +"ERRO! Era esperado um ("+ self.RESET)
+        else:
+            self.nextToken()
         if self.tk.category != 'RIGHT_PAREN':
             self.Scalar_Identifier_Error()
-            self.End_Parameters()
+        self.nextToken()
+        
+    def Sub_Parameters2(self):
+        self.nextToken()
+        if self.tk.category != 'LEFT_PAREN':
+            before_error = self.token[self.cont -1]
+            self.erro = 1
+            print(before_error.value + self.BLUE +  " <\n" + self.RESET  + self.RED +"ERRO! Era esperado um ("+ self.RESET)
+        else:
+            self.nextToken()
+        if self.tk.category != 'RIGHT_PAREN':
+            self.Scalar_Identifier_Error2()
+        self.nextToken()
             
     def Semicolon(self):
-        self.nextToken()
         if self.tk.category != 'SEMICOLON':
             self.Block_Sub()
         else:
@@ -239,8 +314,8 @@ class Parser:
             self.table.add(self.id_current,self.table.hash[self.tk.value])
         else:
             self.table.add(self.id_current, self.tk.category)
-        self.Sub_Names()
-        self.Sub_Parameters()
+        self.Sub_Names2()
+        self.Sub_Parameters2()
         self.Semicolon()
         
     # return
@@ -254,23 +329,23 @@ class Parser:
         
     def Error_Return(self):
         before_error = self.token[self.cont -1]
-        raise NameError(before_error.value + self.BLUE +  " <\n" + self.RESET  + self.RED +f"ERRO! return não é reconhecido fora da função." + self.RESET)
+        self.erro = 1
+        print(before_error.value + self.BLUE +  " <\n" + self.RESET  + self.RED +f"ERRO! return não é reconhecido fora da função." + self.RESET)
         
     def Print_Symbol_Table(self):
-        print("  ID      |      TYPE")
-        for key, value in self.table.hash.items():
-            print(f"{key} -> {value}")
-            print('-------------------------------------')
+        if self.erro == 0:
+            print("  ID      |      TYPE")
+            for key, value in self.table.hash.items():
+                print(f"{key} -> {value}")
+                print('-------------------------------------')
 
     # possiveis grafos que chamaremos --------------------------------------------------------------------------
     def File_Item(self):
         self.nextToken()
-        # Adicionando na tabela de simbolos
-        # if re.search("IDENTIFIER",self.tk.category) != None:
-        #     self.table.add(self.tk.value, '')
         match self.tk.category:
             case 'UNKNOW':
-                raise NameError(self.RED+ f"ERRO! {self.tk.value} não é reconhecido." + self.RESET)
+                self.erro = 1
+                print(self.RED + "ERRO! não é reconhecido." + self.RESET)
             case 'RIGHT_BRACE':
                 self.Brace_Verification()
             case 'SCALAR_IDENTIFIER':
@@ -301,4 +376,5 @@ class Parser:
                 pass
             case default:
                 before_error = self.token[self.cont -1]
-                raise NameError(before_error.value + self.BLUE +  " <\n" + self.RESET + self.RED + f"ERRO! {self.tk.value} não é reconhecido." + self.RESET)
+                self.erro = 1
+                print(before_error.value + self.BLUE +  " <\n" + self.RESET + self.RED + "ERRO! não é um reconhecimento válido." + self.RESET)
