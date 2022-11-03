@@ -69,5 +69,6 @@ else:
     createTxtFile(lexer)
     parser = Parser(lexer.tokens)
     parser.File_Item()
+    parser.Print_Symbol_Table()
 finally:
     pass

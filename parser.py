@@ -1,5 +1,7 @@
 from operator import ne
+from symbol_table import * 
 import sys
+import re
 class Parser:
     def __init__(self, token):
         self.token = token
@@ -7,6 +9,8 @@ class Parser:
         self.cont = -1
         self.left_brace = 0
         self.sub_ativa = 0
+        self.table = symb()
+        self.id_current = ''
         self.RED = "\033[1;31m"
         self.RESET = "\033[0;0m"
         self.BLUE = "\033[1;34m"
@@ -84,6 +88,10 @@ class Parser:
     def Scalar_Declaration(self): 
         self.Operator_Assign()
         self.nextToken()
+        if self.table.hash.get(self.tk.value) != None:
+            self.table.add(self.id_current,self.table.hash[self.tk.value])
+        else:
+            self.table.add(self.id_current, self.tk.category)
         self.Values()
         
     def Array_Verification(self):
@@ -98,6 +106,7 @@ class Parser:
     def Vector_Declaration(self):
         self.Operator_Assign()
         self.nextToken() 
+        self.table.add(self.id_current, self.tk.category)
         self.Array_Verification() 
         self.File_Item()
         
@@ -226,6 +235,10 @@ class Parser:
         
     def Subroutine(self):
         self.nextToken()
+        if self.table.hash.get(self.tk.value) != None:
+            self.table.add(self.id_current,self.table.hash[self.tk.value])
+        else:
+            self.table.add(self.id_current, self.tk.category)
         self.Sub_Names()
         self.Sub_Parameters()
         self.Semicolon()
@@ -243,19 +256,28 @@ class Parser:
         before_error = self.token[self.cont -1]
         raise NameError(before_error.value + self.BLUE +  " <\n" + self.RESET  + self.RED +f"ERRO! return não é reconhecido fora da função." + self.RESET)
         
+    def Print_Symbol_Table(self):
+        print("  ID      |      TYPE")
+        for key, value in self.table.hash.items():
+            print(f"{key} -> {value}")
+            print('-------------------------------------')
 
     # possiveis grafos que chamaremos --------------------------------------------------------------------------
     def File_Item(self):
         self.nextToken()
-        # print(self.tk.category)
+        # Adicionando na tabela de simbolos
+        # if re.search("IDENTIFIER",self.tk.category) != None:
+        #     self.table.add(self.tk.value, '')
         match self.tk.category:
             case 'UNKNOW':
                 raise NameError(self.RED+ f"ERRO! {self.tk.value} não é reconhecido." + self.RESET)
             case 'RIGHT_BRACE':
                 self.Brace_Verification()
             case 'SCALAR_IDENTIFIER':
+                self.id_current = self.tk.value
                 self.Scalar_Declaration()
             case 'VECTOR_IDENTIFIER':
+                self.id_current = self.tk.value
                 self.Vector_Declaration()
             case 'RESERVED_PRINT':  
                 self.Print()
@@ -266,6 +288,7 @@ class Parser:
             case 'RESERVED_WHILE':
                 self.While()
             case 'RESERVED_SUBROUTINE':
+                self.id_current = self.tk.value
                 self.Subroutine()
             case 'RESERVED_RETURN':
                 if self.sub_ativa == 1:
