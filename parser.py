@@ -15,6 +15,7 @@ class Parser:
         self.BLUE = "\033[1;34m"
         self.GREEN = "\033[0;32m"
         self.erro = 0
+        self.name_sub = ''
     # Identifica o proximo token
     def nextToken(self):
         self.cont += 1
@@ -55,7 +56,7 @@ class Parser:
     def Brace_Verification(self):
         if self.left_brace == 1:
             if self.sub_ativa == 1:
-                self.sub_ativa == 0
+                self.sub_ativa = 0
         if self.left_brace > 0:
             self.left_brace -= 1
             self.File_Item()
@@ -107,9 +108,15 @@ class Parser:
     def Scalar_Declaration(self): 
         self.Operator_Assign()
         if self.table.hash.get(self.tk.value) != None:
-            self.table.add(self.id_current,self.table.hash[self.tk.value])
+            #if(self.sub_ativa == 1):
+            #    self.table.add(self.id_current, self.name_sub)
+            #else:
+                self.table.add(self.id_current,self.table.hash[self.tk.value])
         else:
-            self.table.add(self.id_current, self.tk.category)
+            #if(self.sub_ativa == 1):
+            #    self.table.add(self.id_current, self.name_sub)
+            #else:
+                self.table.add(self.id_current, self.tk.category)
         if self.tk.category != '':
             self.Values()
         else:
@@ -132,7 +139,10 @@ class Parser:
                     
     def Vector_Declaration(self):
         self.Operator_Assign()
-        self.table.add(self.id_current, self.tk.category)
+        if self.table.hash.get(self.tk.value) != None:
+            self.table.add(self.id_current,self.table.hash[self.tk.value])
+        else:
+            self.table.add(self.id_current, self.tk.category)
         if self.tk.category != '':
             self.Array_Verification() 
             self.File_Item()
@@ -245,6 +255,8 @@ class Parser:
             self.erro = 1
             print(before_error.value + self.BLUE + " <\n" + self.RESET + self.RED +"ERRO! Era esperado um identificador ou um nome para a subrotina"+ self.RESET)
             self.cont -= 1
+        else:
+            self.name_sub = self.tk.value
         
     def Comma(self):
         if self.tk.category != 'COMMA':
@@ -309,7 +321,6 @@ class Parser:
             self.File_Item()
         
     def Subroutine(self):
-        self.nextToken()
         if self.table.hash.get(self.tk.value) != None:
             self.table.add(self.id_current,self.table.hash[self.tk.value])
         else:
@@ -335,10 +346,13 @@ class Parser:
     def Print_Symbol_Table(self):
         if self.erro == 0:
             print(self.BLUE + "Tabela de Símbolos:\n" + self.RESET)
-            print("  ID      |      TYPE")
-            for key, value in self.table.hash.items():
-                print(f"{key} -> {value}")
-                print('-------------------------------------')
+            print(self.RED + "  ID      " + self.RESET + "|"+ self.RED + "      TYPE      " + self.RESET + "|"+ self.RED + "      VALUE      " + self.RESET + "|"+ self.RED + "      SCOPE" + self.RESET)
+            for key, category in self.table.hash.items():
+                if(category == 'FLOAT_NUMBER' or category == 'INT_NUMBER' or category == 'ARRAY_OF_NUMBERS'):
+                    print(f"{key}" + self.RED + " -> " + self.RESET + f"{category}" + self.RED + " -> " + self.RESET + "0" + self.RED + " -> " + self.RESET + "GLOBAL")
+                else:
+                    print(f"{key}" + self.RED + " -> " + self.RESET + f"{category}" + self.RED + " -> " + self.RESET + "null" + self.RED + " -> " + self.RESET + "GLOBAL")
+                print('-----------------------------------------------------------')
 
     # possiveis grafos que chamaremos --------------------------------------------------------------------------
     def File_Item(self):
@@ -364,6 +378,7 @@ class Parser:
             case 'RESERVED_WHILE':
                 self.While()
             case 'RESERVED_SUBROUTINE':
+                self.nextToken()
                 self.id_current = self.tk.value
                 self.Subroutine()
             case 'RESERVED_RETURN':

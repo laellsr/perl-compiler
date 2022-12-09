@@ -11,27 +11,27 @@ sub soma($numero1, $numero2){
 }
 
 sub subtr($numero1, $numero2){
-    $res = $numero1 - $numero2;
-    return $res;
+    $res2 = $numero1 - $numero2;
+    return $res2;
 }
 
 sub multi($numero1, $numero2){
-    $res = $numero1 * $numero2;
-    return $res;
+    $res3 = $numero1 * $numero2;
+    return $res3;
 }
 
 sub div($numero1, $numero2){
-    $res = $numero1 / $numero2;
+    $res4 = $numero1 / $numero2;
     $erro = 'não podemos dividir por zero';
     if ( $numero2 == 0 ){
         return $erro;
     }
-    return $res;
+    return $res4;
 }
 
 sub mod($numero1, $numero2){
-    $res = $numero1 % $numero2;
-    return $res;
+    $res5 = $numero1 % $numero2;
+    return $res5;
 }
 
 $soma = soma();
