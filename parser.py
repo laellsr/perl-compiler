@@ -16,6 +16,7 @@ class Parser:
         self.GREEN = "\033[0;32m"
         self.erro = 0
         self.name_sub = ''
+        self.monitora_escopo = 'global'
     # Identifica o proximo token
     def nextToken(self):
         self.cont += 1
@@ -107,16 +108,19 @@ class Parser:
             
     def Scalar_Declaration(self): 
         self.Operator_Assign()
+        if self.sub_ativa == 1:
+            self.monitora_escopo = self.tk.value
         if self.table.hash.get(self.tk.value) != None:
             #if(self.sub_ativa == 1):
             #    self.table.add(self.id_current, self.name_sub)
             #else:
-                self.table.add(self.id_current,self.table.hash[self.tk.value])
+                type = self.table.hash[self.tk.value]
+                self.table.add(self.id_current,type[0], self.monitora_escopo)
         else:
             #if(self.sub_ativa == 1):
             #    self.table.add(self.id_current, self.name_sub)
             #else:
-                self.table.add(self.id_current, self.tk.category)
+                self.table.add(self.id_current, self.tk.category, self.monitora_escopo)
         if self.tk.category != '':
             self.Values()
         else:
@@ -139,10 +143,13 @@ class Parser:
                     
     def Vector_Declaration(self):
         self.Operator_Assign()
+        if self.sub_ativa == 1:
+            self.monitora_escopo = self.tk.value
         if self.table.hash.get(self.tk.value) != None:
-            self.table.add(self.id_current,self.table.hash[self.tk.value])
+            type = self.table.hash[self.tk.value]
+            self.table.add(self.id_current,type[0], self.monitora_escopo)
         else:
-            self.table.add(self.id_current, self.tk.category)
+            self.table.add(self.id_current, self.tk.category, self.monitora_escopo)
         if self.tk.category != '':
             self.Array_Verification() 
             self.File_Item()
@@ -321,11 +328,14 @@ class Parser:
             self.File_Item()
         
     def Subroutine(self):
-        if self.table.hash.get(self.tk.value) != None:
-            self.table.add(self.id_current,self.table.hash[self.tk.value])
-        else:
-            self.table.add(self.id_current, self.tk.category)
         self.Sub_Names2()
+        if self.sub_ativa == 1:
+            self.monitora_escopo = self.tk.value
+        if self.table.hash.get(self.tk.value) != None:
+            type = self.table.hash[self.tk.value]
+            self.table.add(self.id_current,type[0], self.monitora_escopo)
+        else:
+            self.table.add(self.id_current, self.tk.category, self.monitora_escopo)
         self.Sub_Parameters2()
         self.Semicolon()
         
@@ -348,10 +358,12 @@ class Parser:
             print(self.BLUE + "Tabela de Símbolos:\n" + self.RESET)
             print(self.RED + "  ID      " + self.RESET + "|"+ self.RED + "      TYPE      " + self.RESET + "|"+ self.RED + "      VALUE      " + self.RESET + "|"+ self.RED + "      SCOPE" + self.RESET)
             for key, category in self.table.hash.items():
+                # print(f"{key}" + self.RED + " -> " + self.RESET + f"{category[0]}" + self.RED + " -> " + self.RESET + f"{category[1]}" + self.RED + " -> " + self.RESET + f"{category[2]}")
+
                 if(category == 'FLOAT_NUMBER' or category == 'INT_NUMBER' or category == 'ARRAY_OF_NUMBERS'):
-                    print(f"{key}" + self.RED + " -> " + self.RESET + f"{category}" + self.RED + " -> " + self.RESET + "0" + self.RED + " -> " + self.RESET + "GLOBAL")
+                    print(f"{key}" + self.RED + " -> " + self.RESET + f"{category[0]}" + self.RED + " -> " + self.RESET + f"{category[1]}" + self.RED + " -> " + self.RESET + f"{category[2]}")
                 else:
-                    print(f"{key}" + self.RED + " -> " + self.RESET + f"{category}" + self.RED + " -> " + self.RESET + "null" + self.RED + " -> " + self.RESET + "GLOBAL")
+                    print(f"{key}" + self.RED + " -> " + self.RESET + f"{category[0]}" + self.RED + " -> " + self.RESET + f"{category[1]}" + self.RED + " -> " + self.RESET + f"{category[2]}")
                 print('-----------------------------------------------------------')
 
     # possiveis grafos que chamaremos --------------------------------------------------------------------------
