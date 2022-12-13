@@ -72,6 +72,8 @@ else:
     parser = Parser(lexer.tokens)
     parser.File_Item()
     print ()
+    parser.Print_Symbol_Table_Inicial()
+    print ()
     parser.Print_Symbol_Table()
 finally:
     pass

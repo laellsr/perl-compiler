@@ -16,6 +16,12 @@ class Parser:
         self.GREEN = "\033[0;32m"
         self.erro = 0
         self.name_sub = ''
+        self.lista_tipo = []
+        #self.exp_var = ''
+        self.lista_exp = [0, 0]
+        self.simb_exp = ''
+        self.passou_return = 0
+        self.name_scalar_sub = ''
     # Identifica o proximo token
     def nextToken(self):
         self.cont += 1
@@ -37,6 +43,23 @@ class Parser:
             self.Sub_Names()
         else:
             self.nextToken()
+            
+    def Atom_Expr_Teste(self):
+        if self.tk.category != 'INTEGER_NUMBER' and self.tk.category != 'FLOAT_NUMBER' and self.tk.category != 'SCALAR_IDENTIFIER':
+            self.Sub_Names()
+        elif self.tk.category == 'SCALAR_IDENTIFIER': 
+            self.lista_exp[1] = self.table.buscaValor(self.tk.value)
+            #self.exp_var = self.exp_var + self.table.buscaValor(self.tk.value)
+            if self.table.hash.get(self.tk.value) == None:
+                print("ERROOOOOOOOOOOOOOOOOO de variavel nao declarada")
+            else:
+                self.lista_tipo.append(self.table.busca(self.tk.value))
+            self.nextToken()
+        else:
+            self.lista_exp[1] = self.tk.value
+            #self.exp_var = self.exp_var + self.tk.value
+            self.lista_tipo.append(self.tk.category)        
+            self.nextToken()
                 
     # Operadores para um bloco de condição            
     def OPERATOR(self):
@@ -56,7 +79,10 @@ class Parser:
     def Brace_Verification(self):
         if self.left_brace == 1:
             if self.sub_ativa == 1:
+                if self.passou_return == 0:
+                    self.table.add(self.name_sub, 'PROCEDURE', '', 'GLOBAL')
                 self.sub_ativa = 0
+                self.name_sub = ''
         if self.left_brace > 0:
             self.left_brace -= 1
             self.File_Item()
@@ -74,9 +100,39 @@ class Parser:
             self.cont -= 1
             self.File_Item() 
         else: 
+            self.simb_exp = self.tk.value
+            #self.exp_var = self.exp_var + self.tk.value
             self.nextToken()             
-            self.Atom_Expr()             
+            self.Atom_Expr_Teste()  
+            if self.simb_exp == '+':
+                self.lista_exp[0] = float(self.lista_exp[0]) + float(self.lista_exp[1]) 
+            elif self.simb_exp == '-':
+                self.lista_exp[0] = float(self.lista_exp[0]) - float(self.lista_exp[1])
+            elif self.simb_exp == '*':
+                self.lista_exp[0] = float(self.lista_exp[0]) * float(self.lista_exp[1]) 
+            elif self.simb_exp == '/':
+                self.lista_exp[0] = float(self.lista_exp[0]) / float(self.lista_exp[1]) 
+            elif self.simb_exp == '%':
+                self.lista_exp[0] = float(self.lista_exp[0]) % float(self.lista_exp[1])  
             if self.tk.category == 'SEMICOLON':
+                cont = 0
+                for x in self.lista_tipo:
+                    if x == 'STRING':
+                        cont = -1000
+                    if x != 'INTEGER_NUMBER':
+                        cont = cont + 1
+                if cont < 0:
+                    print('ERROOOOOO somando strings')
+                elif cont == 0:
+                    if(self.sub_ativa == 1):
+                        self.table.add(self.id_current,'INTEGER_NUMBER', self.lista_exp[0], self.name_sub)
+                    else:
+                        self.table.add(self.id_current,'INTEGER_NUMBER', self.lista_exp[0], 'GLOBAL')
+                else:
+                    if(self.sub_ativa == 1):
+                        self.table.add(self.id_current,'FLOAT_NUMBER', self.lista_exp[0], self.name_sub)
+                    else:
+                        self.table.add(self.id_current,'FLOAT_NUMBER', self.lista_exp[0], 'GLOBAL')
                 self.File_Item()            
             else:
                 self.Op_Declaration()
@@ -92,31 +148,85 @@ class Parser:
                 
     def Values(self):
         if self.tk.category == 'STRING':
+            if(self.sub_ativa == 1):
+                self.table.add(self.id_current, self.tk.category, self.tk.value, self.name_sub)
+            else:
+                self.table.add(self.id_current, self.tk.category, self.tk.value, 'GLOBAL')
             self.nextToken()
             if self.tk.category != 'SEMICOLON':
                 before_error = self.token[self.cont -1]
                 self.erro = 1
-                print( before_error.value + self.BLUE +  " <\n" + self.RESET + self.RED + "ERRO! Era esperado um ';'"  ) 
+                print( before_error.value + self.BLUE +  " <\n" + self.RESET + self.RED + "ERRO! Era esperado um ';'" + self.RESET )
             self.File_Item() 
         else:
-            self.Atom_Expr()
+            self.Atom_Expr_Teste()
+            if self.name_scalar_sub != '':
+                if self.tk.category == 'SEMICOLON':
+                    if(self.sub_ativa == 1):
+                        self.table.add(self.id_current, self.name_scalar_sub, self.table.buscaValor(self.table.buscaValor(self.name_scalar_sub)), self.name_sub)
+                    else:
+                        self.table.add(self.id_current, self.name_scalar_sub, self.table.buscaValor(self.table.buscaValor(self.name_scalar_sub)), 'GLOBAL')
+                    self.File_Item()
+                else:
+                    before_error = self.token[self.cont -1]
+                    self.erro = 1
+                    print( before_error.value + self.BLUE +  " <\n" + self.RESET + self.RED + "ERRO! Era esperado um ';'" + self.RESET )
+                    self.File_Item()
+            else:
+                if self.tk.category == 'SEMICOLON':
+                    if self.token[self.cont -1].category == 'SCALAR_IDENTIFIER':
+                        if(self.sub_ativa == 1):
+                            self.table.add(self.id_current, self.lista_tipo[0], self.table.buscaValor(self.token[self.cont -1].value), self.name_sub)
+                        else:
+                            self.table.add(self.id_current, self.lista_tipo[0], self.table.buscaValor(self.token[self.cont -1].value), 'GLOBAL')
+                    else:
+                        if(self.sub_ativa == 1):
+                            self.table.add(self.id_current, self.token[self.cont -1].category, self.token[self.cont -1].value, self.name_sub)
+                        else:
+                            self.table.add(self.id_current, self.token[self.cont -1].category, self.token[self.cont -1].value, 'GLOBAL')
+                    self.File_Item()
+                else:
+                    if self.token[self.cont -1].category == 'SCALAR_IDENTIFIER': 
+                        self.lista_exp[0] = self.table.buscaValor(self.token[self.cont -1].value)
+                    else:
+                        self.lista_exp[0] = self.token[self.cont -1].value
+                    self.Op_Declaration()
+                
+    def Values_Return(self):
+        if self.tk.category == 'STRING':
+            self.nextToken()
+            if self.tk.category != 'SEMICOLON':
+                before_error = self.token[self.cont -1]
+                self.erro = 1
+                print( before_error.value + self.BLUE +  " <\n" + self.RESET + self.RED + "ERRO! Era esperado um ';'" + self.RESET)
+            self.File_Item() 
+        else:
+            self.Atom_Expr_Teste()
             if self.tk.category == 'SEMICOLON':
+                if self.token[self.cont -1].category == 'SCALAR_IDENTIFIER':
+                    #self.table.add(self.name_sub, 'SUBROUTINE_IDENTIFIER', self.table.busca(self.token[self.cont -1].value), 'GLOBAL')
+                    self.table.add(self.name_sub, 'SUBROUTINE_IDENTIFIER', self.token[self.cont -1].value, 'GLOBAL')
+                else:
+                    self.table.add(self.name_sub, 'SUBROUTINE_IDENTIFIER', self.token[self.cont -1].value, 'GLOBAL')
                 self.File_Item()
             else:
-                self.Op_Declaration()
+                before_error = self.token[self.cont -1]
+                self.erro = 1
+                print( before_error.value + self.BLUE +  " <\n" + self.RESET + self.RED + "ERRO! Só retornamos um símbolo (ID ou número)" + self.RESET)
+                self.File_Item()
             
     def Scalar_Declaration(self): 
         self.Operator_Assign()
-        if self.table.hash.get(self.tk.value) != None:
+        #if self.table.hash.get(self.tk.value) != None:
             #if(self.sub_ativa == 1):
             #    self.table.add(self.id_current, self.name_sub)
             #else:
-                self.table.add(self.id_current,self.table.hash[self.tk.value])
-        else:
+                #self.table.add(self.id_current,self.table.hash[self.tk.value])
+        #else:
             #if(self.sub_ativa == 1):
             #    self.table.add(self.id_current, self.name_sub)
             #else:
-                self.table.add(self.id_current, self.tk.category)
+                #self.table.add(self.id_current, self.tk.category)
         if self.tk.category != '':
             self.Values()
         else:
@@ -131,6 +241,10 @@ class Parser:
             self.erro = 1
             print(before_error.value + self.BLUE +  self.BLUE +  " <\n" + self.RESET + self.RESET + self.RED +"ERRO na declaração de Array"+ self.RESET)
         else:
+            if(self.sub_ativa == 1):
+                self.table.add(self.id_current, self.tk.category, self.tk.value, self.name_sub)
+            else:
+                self.table.add(self.id_current, self.tk.category, self.tk.value, 'GLOBAL')
             self.nextToken() 
             if self.tk.category != 'SEMICOLON':
                 before_error = self.token[self.cont -1]
@@ -139,10 +253,6 @@ class Parser:
                     
     def Vector_Declaration(self):
         self.Operator_Assign()
-        if self.table.hash.get(self.tk.value) != None:
-            self.table.add(self.id_current,self.table.hash[self.tk.value])
-        else:
-            self.table.add(self.id_current, self.tk.category)
         if self.tk.category != '':
             self.Array_Verification() 
             self.File_Item()
@@ -247,6 +357,8 @@ class Parser:
             self.erro = 1
             print(before_error.value + self.BLUE + " <\n" + self.RESET + self.RED +"ERRO! Era esperado um identificador ou um nome para a subrotina"+ self.RESET)
             self.cont -= 1
+        else:
+            self.name_scalar_sub = self.tk.value
         self.Sub_Parameters()
             
     def Sub_Names2(self):
@@ -321,10 +433,7 @@ class Parser:
             self.File_Item()
         
     def Subroutine(self):
-        if self.table.hash.get(self.tk.value) != None:
-            self.table.add(self.id_current,self.table.hash[self.tk.value])
-        else:
-            self.table.add(self.id_current, self.tk.category)
+        self.table.add(self.id_current, self.tk.category, '', 'GLOBAL')
         self.Sub_Names2()
         self.Sub_Parameters2()
         self.Semicolon()
@@ -332,10 +441,12 @@ class Parser:
     # return
     
     def Return(self):
+        self.passou_return = 1
         self.nextToken()
         if self.tk.category != 'SEMICOLON':
-            self.Values()
+            self.Values_Return()
         else:
+            self.table.add(self.name_sub, 'SUBROUTINE_IDENTIFIER', 'null', 'GLOBAL')
             self.File_Item()
         
     def Error_Return(self):
@@ -345,17 +456,27 @@ class Parser:
         
     def Print_Symbol_Table(self):
         if self.erro == 0:
-            print(self.BLUE + "Tabela de Símbolos:\n" + self.RESET)
+            print(self.BLUE + "Tabela de Símbolos do Analisador Semântico:\n" + self.RESET)
             print(self.RED + "  ID      " + self.RESET + "|"+ self.RED + "      TYPE      " + self.RESET + "|"+ self.RED + "      VALUE      " + self.RESET + "|"+ self.RED + "      SCOPE" + self.RESET)
             for key, category in self.table.hash.items():
-                if(category == 'FLOAT_NUMBER' or category == 'INT_NUMBER' or category == 'ARRAY_OF_NUMBERS'):
-                    print(f"{key}" + self.RED + " -> " + self.RESET + f"{category}" + self.RED + " -> " + self.RESET + "0" + self.RED + " -> " + self.RESET + "GLOBAL")
+                print(f"{key}" + self.RED + " -> " + self.RESET + f"{category[0]}" + self.RED + " -> " + self.RESET + f"{category[1]}" + self.RED + " -> " + self.RESET + f"{category[2]}")
+                print('------------------------------------------------------------------------------------------')
+                
+    def Print_Symbol_Table_Inicial(self):
+        if self.erro == 0:
+            print(self.BLUE + "Tabela de Símbolos Inicial:\n" + self.RESET)
+            print(self.RED + "  ID      " + self.RESET + "|"+ self.RED + "      TYPE      " + self.RESET + "|"+ self.RED + "      VALUE      " + self.RESET + "|"+ self.RED + "      SCOPE" + self.RESET)
+            for key, category in self.table.hash.items():
+                if(category[0] == 'FLOAT_NUMBER' or category[0] == 'INTEGER_NUMBER' or category[0] == 'ARRAY_OF_NUMBERS'):
+                    print(f"{key}" + self.RED + " -> " + self.RESET + f"{category[0]}" + self.RED + " -> " + self.RESET + "0" + self.RED + " -> " + self.RESET + f"{category[2]}")
                 else:
-                    print(f"{key}" + self.RED + " -> " + self.RESET + f"{category}" + self.RED + " -> " + self.RESET + "null" + self.RED + " -> " + self.RESET + "GLOBAL")
+                    print(f"{key}" + self.RED + " -> " + self.RESET + f"{category[0]}" + self.RED + " -> " + self.RESET + "null" + self.RED + " -> " + self.RESET + f"{category[2]}")
                 print('-----------------------------------------------------------')
 
     # possiveis grafos que chamaremos --------------------------------------------------------------------------
     def File_Item(self):
+        self.name_scalar_sub = ''
+        self.lista_tipo = []
         self.nextToken()
         match self.tk.category:
             case 'UNKNOW':
